@@ -484,3 +484,15 @@ FROM (SELECT EMP_NAME
             ,DENSE_RANK() OVER(ORDER BY SALARY DESC) 순위
       FROM EMPLOYEE)
 WHERE 순위 <=10;
+
+--WITH :서브쿼리를 미리 선언해놓고 사용( 해당 SELECT 절에서 사용가능 )
+--서브쿼리 구문이 길어진다면 해당 구문을 미리 선언해 놓고 테이블처럼 이용가능
+WITH SAL_TOTAL as (SELECT NVL (DEPT TITLE, '부서미지정' ) , 부서명 , SUM(SALARY) 급여합
+FROM EMPLOYEE
+LEFT JOIN DEPARTMENT ON (DEPT CODE =DEPT ID)
+GROUP BY DEPT TITLE;
+SELECT * 
+FROM SAL_TOTAL
+WHERE 급여합>(SELECT SUM(SALARY)*0.2
+            FROM EMPLOYEE);
+            

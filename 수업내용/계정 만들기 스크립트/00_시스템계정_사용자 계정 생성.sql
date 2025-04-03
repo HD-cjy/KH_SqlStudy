@@ -9,7 +9,7 @@
 --사용자 계정 생성 방법
 --[표현법] CREATE USER 계정명 IDENTIFIED BY 비밀번호;
 CREATE USER KH IDENTIFIED BY KH;  -- CTRL + ENTER 한줄 실행
-
+GRANT RESOURCE,CONNECT TO KH;
 --생성된 사용자 계정에게 최소한의 권한 부여하기 
 -- 접속 및 데이터 관리 권한 
 --[표현법] GRANT 권한1,권한2,... TO 계정명; 
@@ -25,6 +25,4 @@ GRANT RESOURCE,CONNECT TO KH;
 --           INSERT,UPDATE,DELETE 구문을 사용할 수 있는 권한을 모아놓은 ROLE
 
 
-
-
-
+ 

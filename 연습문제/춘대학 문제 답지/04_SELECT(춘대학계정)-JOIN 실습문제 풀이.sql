@@ -239,16 +239,51 @@ WHERE DEPARTMENT_NAME = '환경조경학과'
 AND CLASS_TYPE LIKE '전공%'
 GROUP BY CLASS_NO,CLASS_NAME
 ORDER BY 1;
+--17 
+SELECT DEPARTMENT_NO
+FROM TB_STUDENT
+WHERE STUDENT_NAME ='최경희';
 
+SELECT STUDENT_NAME,STUDENT_ADDRESS
+from TB_STUDENT
+WHERE DEPARTMENT_NO = (SELECT DEPARTMENT_NO
+                        FROM TB_STUDENT
+                        WHERE STUDENT_NAME ='최경희');
+---18
+--국어국문학과 총 평점 내림차 정렬 조회
+SELECT STUDENT_NO, STUDENT_NAME,AVG(point)
+from TB_STUDENT
+join TB_GRADE using (STUDENT_NO)
+join TB_DEPARTMENT using (DEPARTMENT_NO)
+WHERE DEPARTMENT_NAME = '국어국문학과'
+GROUP BY STUDENT_NO,STUDENT_NAME
+ORDER BY 3 DESC;--평점 내림차
+--위 구문에서 첫번째 학생정보 추출
+--인라인 뷰 이용 
+SELECT * 
+FROM (SELECT STUDENT_NO, STUDENT_NAME,AVG(point)
+      from TB_STUDENT
+      join TB_GRADE using (STUDENT_NO)
+      join TB_DEPARTMENT using (DEPARTMENT_NO)
+      WHERE DEPARTMENT_NAME = '국어국문학과'
+      GROUP BY STUDENT_NO,STUDENT_NAME
+      ORDER BY 3 DESC)
+WHERE ROWNUM = 1;
+--19. 환경 조경학과와 같은 계열 학과 조회
+SELECT CATEGORY,DEPARTMENT_NAME
+from TB_DEPARTMENT
+WHERE category = (SELECT category  
+                  FROM TB_DEPARTMENT
+                  where department_name = '환경조경학과');
 
-
-
-
-
-
-
-
-
-
-
-
+SELECT department_name "계열 학과명",round(avg(point),1) 전공평점
+from TB_DEPARTMENT
+JOIN TB_CLASS using(DEPARTMENT_NO)
+join TB_GRADE using (class_no)
+where categoty = (SELECT category  
+                  FROM TB_DEPARTMENT
+                  where department_name = '환경조경학과')
+AND
+class_type like '전공%'
+GROUP by department_name
+ORDER by 1;
