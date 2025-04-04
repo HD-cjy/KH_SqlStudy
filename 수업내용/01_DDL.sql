@@ -400,3 +400,50 @@ CREATE TABLE MEM(
     --테이블 레벨 방식으로 외래키 
     FOREIGN KEY (GRADE_ID) REFERACNCE MEM_GRADE ON DELTE CASCADE --참조 테이블 컬럼 생략 (PK로 잡힌다.)
 );
+
+
+-------------------------------------------------------------------------------------------------------
+--아래 작업들은 KH계정에서 수행
+/*
+    서브 쿼리를 이용하여 테이블 생성해보기( 테이블 복사 )
+    메인 SQL문 SELECT,Create,insert,update)을 보조하는 역할의 쿼리문
+    [표현법]
+    CREATE TABEL 테이블명
+    AS 서브쿼리; 
+*/
+SELECT * from employee;
+
+employee 테이블 담긴 정보 그대로 복사 테이블 만들어보기
+
+CREATE TABLE EMPLOYEE_COPY
+AS (SELECT * FROM employee);
+
+SELECT * from EMPLOYEE_COPY;--  제약조건이나 COMMENT는 복사되지 않았음 BUT not null은 복사했다.
+
+--컬럼 데이터값은 복사 완료.
+--not null 제약조건 복사
+--나머지 제약조건과, comment, default들은 복사 불가
+--만약 테이블 컬럼 구조만 복사하고 싶고 데이터는 복사하고 싶지 않다면?? 
+--컬럼 형식만 조회될 수 있도록 조건처리를 해주면 된다.
+
+SELECT * FROM EMPLOYEE
+WHERE 1=0; --값이 항상 false 즉 조건은 항상 불일치 => 이로인해 조회불가능(테이블 형식, 컬럼 형식만 가지고 온다.)
+
+create table EMPLOYEE_COPY2
+AS (SELECT * 
+    FROM EMPLOYEE
+    WHERE 1=0);
+
+-- 전체 사원의 사번 , 사원명, 급여,연봉 조회 결과를 이용하여 테이블 복사해보자 
+--employee copy3 ㅁ만들어서 테이터까지 복사 
+SELECT emp_no,emp_name,salary,(bonus+(12*salary)) 연봉
+FROM EMPLOYEE;
+
+create table EMPLOYEE_COPY5
+AS (SELECT emp_no,emp_name,salary,(nvl(bonus,0)+(12*salary)) 연봉
+    FROM EMPLOYEE);
+
+    SELECT * from EMPLOYEE_COPY5;
+    SELECT * from EMPLOYEE_COPY4;
+--서브쿼리에 산술연산식 또는 함수식이 기술된경우 해당컬럼은 반드시 별칭을 부여해야한다/
+
