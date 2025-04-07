@@ -1,6 +1,30 @@
 -- 1. 70년대  생(1970~1979)  중  여자이면서  전씨인  사원의  이름과  주민번호,  부서  명,  직급  조회 
+SELECT * from EMPLOYEE;
+
+SELECT emp_name, emp_no,DEPT_TITLE,JOB_CODE
+FROM EMPLOYEE
+JOIN  DEPARTMENT on(dept_code = dept_ID) 
+join job using(job_code)
+where substr(emp_no,1,2) BETWEEN 70 and 79
+and substr(emp_no,8,1) in ('2','4')
+and emp_name like '전%';
+
+
+
+
+
 
 -- 2.  나이  상  가장  막내의  사원  코드,  사원  명,  나이,  부서  명,  직급  명  조회 
+SELECT EMP_ID,EMP_NAME,extract(year from SYSDATE) - EXTRACT(Year from TO_DATE(substr(emp_no,1,2),'RR')) 나이
+,DEPT_TITLE,JOB_NAME
+from EMPLOYEE
+JOIN DEPARTMENT on (dept_code = dept_id)
+JOIN JOB USING(JOB_CODE)
+WHERE EMP_NO = (SELECT MIN(EMP_NO) 
+                FROM EMPLOYEE);
+SELECT * from DEPARTMENT;
+SELECT * from JOB;
+SELECT * from EMPLOYEE;
 
 -- 3.  이름에  ‘형’이  들어가는  사원의  사원  코드,  사원  명,  직급  조회 
 
