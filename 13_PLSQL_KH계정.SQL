@@ -352,23 +352,159 @@ rowtype 변수로 employee 이용
 사번을 입력받아 ooo님이 연봉은  (원화표시)\000,000,000 원 입니다 형식으로 출력해보기 */
 
 DECLARE
-    EID EMPLOYEE.EMP_ID%TYPE;
-    ENAME EMPLOYEE.EMP_NAME%TYPE;
-    SAL EMPLOYEE.SALARY%TYPE;
-    BONUS EMPLOYEE.BONUS%TYPE;
+    E EMPLOYEE%ROWTYPE;
     YEARSAL NUMBER;
 BEGIN
-    SELECT EMP_ID, EMP_NAME, SALARY, BONUS
-    INTO EID, ENAME, SAL, BONUS
+    SELECT *
+    INTO E
     FROM EMPLOYEE
     WHERE EMP_ID = '&사번';
 
-    IF BONUS IS NULL THEN
-        YEARSAL := SAL * 12;
+    IF E.BONUS IS NULL THEN
+        YEARSAL := E.SALARY * 12;
     ELSE
-        YEARSAL := SAL * 12 + (SAL * BONUS);
+        YEARSAL := E.SALARY * (12 + E.BONUS);
     END IF;
 
-    DBMS_OUTPUT.PUT_LINE(ENAME || '님의 연봉은 ' || TO_CHAR(YEARSAL, '999,999,999') || '원 입니다.');
+    DBMS_OUTPUT.PUT_LINE(E.EMP_NAME || '님의 연봉은 ￦' || TO_CHAR(YEARSAL, 'FM999,999,999') || '원 입니다.');
+END;
+/
+
+
+
+/*
+    1) BASIC 반복문
+    [표현식]
+    LOOP
+        반복적으로 실행할 구문
+    END LOOP;
+
+    2) BASIC LOOP문 
+    [표현식]
+    FOR 변수 IN 초기값..최종값 LOOP
+        반복적으로 실행할 구문
+    END LOOP;
+*/
+DECLARE
+    I NUMBER;
+BEGIN
+    I := 1;
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('I 값:' || I);
+        I := I + 1;
+        IF I > 10 THEN
+            EXIT;
+        END IF;
+    END LOOP;
+END;
+/
+
+--------------------------
+/* FOR LOOP문
+    [표현식]
+    FOR 변수 IN 초기값..최종값 LOOP
+        반복적으로 실행할 구문
+    END LOOP;
+*/
+
+---선언부 생략 
+BEGIN
+    FOR I IN 1..10 LOOP
+        DBMS_OUTPUT.PUT_LINE('I 값:' || I);
+    END LOOP;
+END;
+/
+--구구단 짝수단 출력하는 SQL문 작성
+DECLARE
+    DAN NUMBER;
+BEGIN
+    FOR DAN IN 2..9 LOOP
+        DBMS_OUTPUT.PUT_LINE('DAN 값:' || DAN);
+    END LOOP;
+END;
+/
+
+--구구단 짝수단 출력하는 SQL문 작성
+-- DECLARE
+--     DAN NUMBER;
+--     GUGU NUMBER;
+-- BEGIN
+--     FOR DAN IN 2..9 LOOP
+--     LOOP
+--         IF MOD(DAN,2) = 0 THEN 
+--             FOR GUGU IN 1..9 LOOP
+--                 DBMS_OUTPUT.PUT_LINE(DAN || ' * ' || GUGU || ' = ' || DAN * GUGU);
+--             END LOOP;
+--         END IF;
+--     END LOOP;
+-- END;
+/
+
+-- WHILE 구문 --------------------------------------------------
+DECLARE
+    I NUMBER := 1;
+BEGIN
+    WHILE I < 6 LOOP
+        DBMS_OUTPUT.PUT_LINE('I 값: ' || I);
+        I := I + 1;
+    END LOOP;
+END;
+/
+
+/* 예외처리
+    [표현식]
+    EXCEPTION
+    WHEN 예외처리 구문 THEN
+    END;
+*/
+--사용자가 입력한 수로 나눗셈 연산처리 결과 출력
+DECLARE
+    NUM1 NUMBER;
+    NUM2 NUMBER;
+    RESULT NUMBER;
+BEGIN
+    NUM1 := '&수1';
+    NUM2 := '&수2';
+--예외처리 해보기 0으로 나눌수 없는 경우 예외처리 해보기
+    RESULT := NUM1 / NUM2;
+    DBMS_OUTPUT.PUT_LINE('결과 : ' || RESULT);
+EXCEPTION
+    WHEN ZERO_DIVIDE THEN
+        DBMS_OUTPUT.PUT_LINE('0으로 나눌수 없습니다.');
+END;
+/
+
+--UNIQE 제약조건 위배 예외처리 해보기
+BEGIN
+    UPDATE EMPLOYEE
+    SET EMP_ID='&변경할사번'
+    WHERE EMP_NAME='노옹철';
+EXCEPTION
+    WHEN
+    DUP_VAL_ON_INDEX THEN dbms_output.PUT_LINE('이미존재하는 사번');
+    WHEN OTHERS THEN dbms_output.PUT_LINE('예외 발생');
+END;
+/
+
+--사원정보 조회하여 변수에 담을 때 여러행이 조회되면 발생하는 예외처리
+DECLARE
+    EID EMPLOYEE.EMP_ID%TYPE;
+    ENAME EMPLOYEE.EMP_NAME%TYPE;
+BEGIN
+    SELECT EMP_ID,EMP_NAME
+    INTO EID,ENAME
+    FROM EMPLOYEE
+    WHERE MANAGER_ID='&사수사번';
+
+    --출력문
+    DBMS_OUTPUT.PUT_LINE('사번 : ' || EID);
+    DBMS_OUTPUT.PUT_LINE('이름 : ' || ENAME);
+EXCEPTION
+    WHEN TOO_MANY_ROWS THEN
+        DBMS_OUTPUT.PUT_LINE('여러행이 조회되었습니다.');
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('해당 사수사번을 가진 사원이 없습니다.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('예외 발생');
 END;
 /
